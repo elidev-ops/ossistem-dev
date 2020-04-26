@@ -10,4 +10,4 @@ function handleKeyUp(event) {
     .then(users => console.log(users.map(user => user.name)))
 }
 
-document.addEventListener('keyup', debaunceEvent(handleKeyUp, 500))
+document.addEventListener('keyup', debaunceEvent(handleKeyUp))
