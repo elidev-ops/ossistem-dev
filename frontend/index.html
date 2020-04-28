@@ -56,62 +56,105 @@
       </header>
       <div class="container">
         <div class="search">
-          <h1>O que você procura?</h1>
+          <h2>O que você procura?</h2>
           <form>
-            <input type="text" name="search">
+            <input type="text" name="search" placeholder="Ex: cliente/Ambroziu" />
             <button type="submit" id="search" disabled>
               <i class="fas fa-search"></i>
             </button>
           </form>
-          <div class="search-content">
-            
-          </div>
+          <div class="search-content"></div>
         </div>
         <div class="content">
-          
+          <div class="title-page">
+            <h1>Clientes</h1>
+            <span>Cadastro de clientes</span>
+          </div>
+          <div class="page-content">
+            <form>
+              <input type="text" placeholder="Nome completo" name="name">
+              <input type="text" placeholder="Email" name="email">
+              <input type="text" placeholder="Telefone" name="tel">
+              <input type="text" placeholder="Whatsapp" name="whatsapp">
+              <div class="input-box">
+                <input type="text" placeholder="Estado" name="uf">
+                <input type="text" placeholder="Cidade" name="city">
+              </div>
+              <input type="text" placeholder="Endereço" name="address">
+              <input type="text" placeholder="CPF" name="cpf">
+              <button type="submit">Cadastrar</button>
+            </form>
+          </div>
         </div>
       </div>
     </div>
     <script>
-      const btnSearch = document.querySelector('#search')
-      const content = document.querySelector('.search-content')
-      const user = JSON.parse(localStorage.getItem('user'))
-      const token = localStorage.getItem('token')
+      const btnSearch = document.querySelector("#search");
+      const content = document.querySelector(".search-content");
+      const user = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
 
       const filterClients = async (name) =>
-        fetch('http://localhost:3000/client', {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }).then(response => response.json())
+        fetch("http://localhost:3000/client", {
+          headers: { Authorization: `Bearer ${token}` } }).then((response) => response.json());
 
-      const search = document.querySelector('input[name="search"')
+      const search = document.querySelector('input[name="search"');
 
-      const debaunceEvent = (fn, wait = 500, time) => (...args) => { clearTimeout(time, time = setTimeout(() => fn(...args), wait)) }
+      const debaunceEvent = (fn, wait = 500, time) => (...args) => {
+        clearTimeout(time, (time = setTimeout(() => fn(...args), wait)));
+      };
 
-      function handleKeyUp(event) {
-        content.innerHTML = ''
-        filterClients().then(response => {
-          response.map(iten => {
-            const div = document.createElement('div')
-            const strong = document.createElement('strong')
-            const span = document.createElement('span')
-            
-            strong.textContent = iten.name
-            span.textContent = iten.whatsapp
-           
-            div.appendChild(strong)
-            div.appendChild(span)
-            content.appendChild(div)
-          })
-        })
+      function creatElementsSearch(element) {
+        const div = document.createElement("div");
+        const strong = document.createElement("strong");
+        const span = document.createElement("span");
+
+        strong.textContent = element.name;
+        span.textContent = element.whatsapp;
+
+        div.appendChild(strong);
+        div.appendChild(span);
+        content.appendChild(div);
       }
 
-      search.addEventListener('keyup', debaunceEvent(handleKeyUp))
+      function handleKeyUp(event) {
+        content.innerHTML = "";
+        if (!event.target.value) return;
+        filterClients().then((response) => {
+          response.map((item) => creatElementsSearch(item));
+        });
+      }
 
-      search.addEventListener('input', e => {
-        btnSearch.disabled = !e.target.value
-      })
+      search.addEventListener("keyup", debaunceEvent(handleKeyUp));
+
+      search.addEventListener("input", (e) => {
+        btnSearch.disabled = !e.target.value;
+      });
+
+      /* Cadastro */
+      const state = {}
+
+      const sendSubmit = async (data) => fetch('http://localhost:3000/client', { 
+        headers: { 
+          Accept: 
+            "application/json", 
+            "Content-Type": "application/json",
+          Authorization: `Bearer ${token}` 
+        }, 
+        method: 'POST', 
+        body: JSON.stringify(data)
+      }).then(response => response.json())
+
+      async function handlerSubmit(event) {
+        event.preventDefault()
+        for(i = 0; i < event.target.length; i++) {
+          event.target[i].getAttribute('name') ? state[event.target[i].getAttribute('name')] = event.target[i].value : ''
+        }
+        sendSubmit(state).then(response => console.log(response))
+        event.target.reset()
+      }
+      document.addEventListener('submit', handlerSubmit)
+
     </script>
   </body>
 </html>
