@@ -8,9 +8,12 @@ const clientController = require('./controllers/clientsController');
 const productController = require('./controllers/productsController');
 const osController = require('./controllers/osController');
 const sessionController = require('./controllers/sessionController');
+const searchController = require('./controllers/searchController')
 
 // Session
 routes.post('/session', sessionController.session);
+
+routes.get('/search', middlewareAuth, searchController.search);
 // Usuarios
 routes.get('/user', userController.index);
 routes.post('/user', userController.create);

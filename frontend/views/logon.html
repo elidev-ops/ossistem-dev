@@ -69,9 +69,13 @@
           if(response.status !== 500) {
             const data = response.json()
             data.then((response) => {
+              const loading = document.createElement('div')
+              loading.className = 'loading'
+              btn.innerHTML = ''
+              btn.appendChild(loading)
               localStorage.setItem('token', response.token)
               localStorage.setItem('user', JSON.stringify(response.user))
-              window.location.href = '../index.html'
+              window.location = '../index.html'
             })
           } else {
             response.json().then(response => {

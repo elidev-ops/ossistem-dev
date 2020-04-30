@@ -67,21 +67,18 @@
         </div>
         <div class="content">
           <div class="title-page">
-            <h1>Clientes</h1>
-            <span>Cadastro de clientes</span>
+            <h1>Produto</h1>
+            <span>Cadastro de produtos</span>
           </div>
           <div class="page-content">
             <form>
-              <input type="text" placeholder="Nome completo" name="name">
-              <input type="text" placeholder="Email" name="email">
-              <input type="text" placeholder="Telefone" name="tel">
-              <input type="text" placeholder="Whatsapp" name="whatsapp">
-              <div class="input-box">
-                <input type="text" placeholder="Estado" name="uf">
-                <input type="text" placeholder="Cidade" name="city">
-              </div>
-              <input type="text" placeholder="Endereço" name="address">
-              <input type="text" placeholder="CPF" name="cpf">
+              <input type="text" placeholder="Tipo de produto" name="type">
+              <input type="text" placeholder="Marca" name="brand">
+              <input type="text" placeholder="Modelo" name="model">
+              <input type="text" placeholder="SN/IMEI" name="sn">
+              <select name="client_id" id="client_id">
+                <option>Selecione o cliente</option>
+              </select>
               <button type="submit">Cadastrar</button>
             </form>
           </div>
@@ -92,10 +89,12 @@
       const btnSearch = document.querySelector("#search");
       const content = document.querySelector(".search-content");
       const user = JSON.parse(localStorage.getItem("user"));
+      const perfilName = document.querySelector('.perfil-text strong')
+      perfilName.innerHTML = user.name
       const token = localStorage.getItem("token");
 
       const filterClients = async (name) =>
-        fetch("http://localhost:3000/client", {
+        fetch(`http://localhost:3000/search?query=${name}`, {
           headers: { Authorization: `Bearer ${token}` } }).then((response) => response.json());
 
       const search = document.querySelector('input[name="search"');
@@ -104,13 +103,20 @@
         clearTimeout(time, (time = setTimeout(() => fn(...args), wait)));
       };
 
-      function creatElementsSearch(element) {
+      function creatElementsSearch(element, consulta = 'client') {
         const div = document.createElement("div");
         const strong = document.createElement("strong");
         const span = document.createElement("span");
 
-        strong.textContent = element.name;
-        span.textContent = element.whatsapp;
+        if(consulta === 'client') {
+          strong.textContent = element.name;
+          span.textContent = element.whatsapp;
+        }
+
+        if(consulta === 'product') {
+          strong.textContent = element.brand;
+          span.textContent = element.model;
+        }
 
         div.appendChild(strong);
         div.appendChild(span);
@@ -120,7 +126,11 @@
       function handleKeyUp(event) {
         content.innerHTML = "";
         if (!event.target.value) return;
-        filterClients().then((response) => {
+        let [consulta,] = event.target.value.split('/')
+        consulta ? consulta === 'cliente' ? consulta = 'client' : '' : ''
+        consulta ? consulta === 'produto' ? consulta = 'product' : '' : ''
+        consulta ? consulta === 'os' ? consulta = 'os' : '' : ''
+        filterClients(event.target.value).then((response) => {
           response.map((item) => creatElementsSearch(item));
         });
       }
@@ -134,7 +144,7 @@
       /* Cadastro */
       const state = {}
 
-      const sendSubmit = async (data) => fetch('http://localhost:3000/client', { 
+      const sendSubmit = async (data) => fetch('http://localhost:3000/product', { 
         headers: { 
           Accept: 
             "application/json", 
@@ -143,7 +153,7 @@
         }, 
         method: 'POST', 
         body: JSON.stringify(data)
-      }).then(response => response.json())
+      })
 
       async function handlerSubmit(event) {
         event.preventDefault()
@@ -154,6 +164,18 @@
         event.target.reset()
       }
       document.addEventListener('submit', handlerSubmit)
+
+      // Listar clientes
+      const listClientes = document.querySelector('#client_id')
+      const listClientsByUser = async () => fetch('http://localhost:3000/client', { headers: { Authorization: `Bearer ${token}` }})
+      listClientsByUser().then(response => response.json()).then(response => {
+        response.map(item => {
+          const option = document.createElement('option')
+          option.setAttribute('value', item.id)
+          option.textContent = item.name
+          listClientes.appendChild(option)
+        })
+      })
 
     </script>
   </body>

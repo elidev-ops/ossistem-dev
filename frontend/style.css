@@ -30,7 +30,9 @@ body {
 
 input,
 button,
-textarea {
+textarea,
+select,
+option {
   font-family: "Roboto", sans-serif;
 }
 button {
@@ -200,7 +202,7 @@ button {
   flex-direction: column;
 }
 
-.wraper .logon form input, input {
+.wraper .logon form input, input, select {
   border: 0;
   background-color: var(--secondary-color);
   padding: 11px 13px;
@@ -218,6 +220,10 @@ button {
   font-weight: 500;
   padding: 11px 0;
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .wraper .logon form button:disabled, button:disabled  {
@@ -304,7 +310,7 @@ button {
   display: flex;
 }
 
-.search form input {
+.search form input, select {
   margin: 0;
   border-radius: 4px 0 0 4px!important;
 }
@@ -359,6 +365,9 @@ button {
 .page-content form input::placeholder {
   color: rgba(255, 255, 255, 0.3);
 }
+.page-content form select {
+  margin-bottom: 10px;
+}
 
 .page-content form .input-box input:last-child {
   width: 100%;
@@ -375,6 +384,16 @@ button {
 .title-page span {
   color: rgba(255,255,255, .3);
 }
+
+.loading {
+  width: 24px;
+  height: 24px;
+  border: 4px solid transparent;
+  border-top-color: var(--primary-color);
+  border-radius: 50%;
+  animation: rotate 1000ms linear infinite;
+
+}
 .error {
   font-style: italic;
   font-size: 12px;
@@ -383,6 +402,15 @@ button {
   text-align: center;
   color: #ff0000;
   animation: error linear 2000ms forwards;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes error {
