@@ -66,22 +66,7 @@
           <div class="search-content"></div>
         </div>
         <div class="content">
-          <div class="title-page">
-            <h1>Produto</h1>
-            <span>Cadastro de produtos</span>
-          </div>
-          <div class="page-content">
-            <form>
-              <input type="text" placeholder="Tipo de produto" name="type">
-              <input type="text" placeholder="Marca" name="brand">
-              <input type="text" placeholder="Modelo" name="model">
-              <input type="text" placeholder="SN/IMEI" name="sn">
-              <select name="client_id" id="client_id">
-                <option>Selecione o cliente</option>
-              </select>
-              <button type="submit">Cadastrar</button>
-            </form>
-          </div>
+          
         </div>
       </div>
     </div>
@@ -144,7 +129,7 @@
       /* Cadastro */
       const state = {}
 
-      const sendSubmit = async (data) => fetch('http://localhost:3000/product', { 
+      const sendSubmit = async (data) => fetch('http://localhost:3000/os', { 
         headers: { 
           Accept: 
             "application/json", 
@@ -167,7 +152,12 @@
 
       // Listar clientes
       const listClientes = document.querySelector('#client_id')
+      const listProducts = document.querySelector('#product_id')
+
       const listClientsByUser = async () => fetch('http://localhost:3000/client', { headers: { Authorization: `Bearer ${token}` }})
+      
+      const listProductsByUser = async () => fetch('http://localhost:3000/product', { headers: { Authorization: `Bearer ${token}` }})
+
       listClientsByUser().then(response => response.json()).then(response => {
         response.map(item => {
           const option = document.createElement('option')
@@ -175,6 +165,19 @@
           option.textContent = item.name
           listClientes.appendChild(option)
         })
+      })
+
+      listClientes.addEventListener('change', async (e) => {
+        listProducts.innerHTML = ''
+        const products = await listProductsByUser().then(response => response.json()).then(response => response)
+        const filterProducts = products.filter(product => product.client_id == listClientes.options[listClientes.selectedIndex].value)
+        filterProducts.map(product => {
+          const option = document.createElement('option')
+          option.setAttribute('value', product.id)
+          option.textContent = `${product.brand} ${product.model}`
+          listProducts.append(option)
+        })
+        
       })
 
     </script>
